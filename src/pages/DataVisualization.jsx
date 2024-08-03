@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, ScatterChart, Scatter, LineChart, Line, AreaChart, Area, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, ScatterChart, Scatter, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DataVisualization = ({ data }) => {
   const [chartType, setChartType] = useState('bar');
@@ -13,29 +13,35 @@ const DataVisualization = ({ data }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (data && chartType === 'bar' && selectedColumn) {
+    if (data && selectedColumn) {
       const columnIndex = data[0].indexOf(selectedColumn);
-      const frequencyMap = data.slice(1).reduce((acc, row) => {
-        const value = row[columnIndex];
-        acc[value] = (acc[value] || 0) + 1;
-        return acc;
-      }, {});
+      if (columnIndex === -1) return;
 
-      const newChartData = Object.entries(frequencyMap).map(([value, count]) => ({
-        value,
-        count
-      }));
+      const columnData = data.slice(1).map(row => row[columnIndex]);
 
-      setChartData(newChartData);
-    } else if (data && chartType === 'scatter' && selectedColumnX && selectedColumnY) {
-      const columnIndexX = data[0].indexOf(selectedColumnX);
-      const columnIndexY = data[0].indexOf(selectedColumnY);
-      const newChartData = data.slice(1).map(row => ({
-        x: parseFloat(row[columnIndexX]),
-        y: parseFloat(row[columnIndexY])
-      })).filter(point => !isNaN(point.x) && !isNaN(point.y));
-
-      setChartData(newChartData);
+      switch (chartType) {
+        case 'bar':
+        case 'pie':
+          const frequencyMap = columnData.reduce((acc, value) => {
+            acc[value] = (acc[value] || 0) + 1;
+            return acc;
+          }, {});
+          setChartData(Object.entries(frequencyMap).map(([value, count]) => ({ value, count })));
+          break;
+        case 'line':
+          setChartData(columnData.map((value, index) => ({ index, value: parseFloat(value) })).filter(item => !isNaN(item.value)));
+          break;
+        case 'scatter':
+          if (selectedColumnX && selectedColumnY) {
+            const columnIndexX = data[0].indexOf(selectedColumnX);
+            const columnIndexY = data[0].indexOf(selectedColumnY);
+            setChartData(data.slice(1).map(row => ({
+              x: parseFloat(row[columnIndexX]),
+              y: parseFloat(row[columnIndexY])
+            })).filter(point => !isNaN(point.x) && !isNaN(point.y)));
+          }
+          break;
+      }
     }
   }, [data, chartType, selectedColumn, selectedColumnX, selectedColumnY]);
 
@@ -85,7 +91,7 @@ const DataVisualization = ({ data }) => {
         </Dialog>
       </div>
 
-      {chartType === 'bar' && (
+      {['bar', 'pie', 'line'].includes(chartType) && (
         <Select onValueChange={setSelectedColumn}>
           <SelectTrigger>
             <SelectValue placeholder="Select a column" />
@@ -123,29 +129,58 @@ const DataVisualization = ({ data }) => {
         </>
       )}
 
-      {chartData.length > 0 && chartType === 'bar' && (
+      {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="value" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      )}
-
-      {chartData.length > 0 && chartType === 'scatter' && (
-        <ResponsiveContainer width="100%" height={400}>
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="x" name={selectedColumnX} />
-            <YAxis dataKey="y" name={selectedColumnY} />
-            <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
-            <Legend />
-            <Scatter name={`${selectedColumnX} vs ${selectedColumnY}`} data={chartData} fill="#8884d8" />
-          </ScatterChart>
+          {chartType === 'bar' && (
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="value" />
+              <YAxis />
+              <RechartsTooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#8884d8" />
+            </BarChart>
+          )}
+          {chartType === 'scatter' && (
+            <ScatterChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="x" name={selectedColumnX} />
+              <YAxis dataKey="y" name={selectedColumnY} />
+              <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Legend />
+              <Scatter name={`${selectedColumnX} vs ${selectedColumnY}`} data={chartData} fill="#8884d8" />
+            </ScatterChart>
+          )}
+          {chartType === 'pie' && (
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="count"
+                nameKey="value"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                fill="#8884d8"
+                label
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 60%)`} />
+                ))}
+              </Pie>
+              <RechartsTooltip />
+              <Legend />
+            </PieChart>
+          )}
+          {chartType === 'line' && (
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="index" />
+              <YAxis />
+              <RechartsTooltip />
+              <Legend />
+              <Line type="monotone" dataKey="value" stroke="#8884d8" />
+            </LineChart>
+          )}
         </ResponsiveContainer>
       )}
     </div>
