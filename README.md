@@ -102,4 +102,43 @@ We don't support custom domains (yet). If you want to deploy your project under 
 
 To use GitHub Pages you will need to follow these steps: 
 - Deploy your project using GitHub Pages - instructions [here](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#creating-your-site)
-- Configure a custom domain for your GitHub Pages site - instructions [here](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)
+- Configure a custom domain for your GitHub Pages site - instructions [here](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)# ML and Data Insights Hub
+
+Live demo: [https://lov-p-78bb727d-380b-49f0-8cbb-6a7a8eff1fc2.fly.dev/](https://lov-p-78bb727d-380b-49f0-8cbb-6a7a8eff1fc2.fly.dev/)
+
+## Project Description
+
+ML and Data Insights Hub is a comprehensive web application for data analysis, visualization, and machine learning. It offers the following features:
+
+- Data Upload: Upload and preview CSV files
+- Statistical Analysis: Calculate and display key statistics for selected columns
+- Data Visualization: Create various charts (bar, scatter, line, pie) from your data
+- Machine Learning: Train and evaluate ML models, make predictions
+- Data Quality Assessment: Analyze data completeness and identify quality issues
+- Dark Mode: Toggle between light and dark themes for comfortable viewing
+
+## Running Locally
+
+To run this project on your local machine:
+
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the development server:
+   ```
+   npm run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`
+
+## Technologies Used
+
+- React
+- Vite
+- Tailwind CSS
+- Recharts
+- Shadcn UI components
+- Lucide React icons
+
+Enjoy exploring your data with ML and Data Insights Hub!
