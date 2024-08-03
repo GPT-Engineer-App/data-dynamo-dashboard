@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import DataSorting from './DataSorting';
 import DataTransformation from './DataTransformation';
 import CorrelationAnalysis from './CorrelationAnalysis';
 
-const DataInsightHub = () => {
+const Index = () => {
   const [data, setData] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
 
