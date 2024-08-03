@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const DataFiltering = ({ data, setData, addToHistory }) => {
+const DataFiltering = ({ data, setData }) => {
   const [selectedColumn, setSelectedColumn] = useState('');
   const [filterValue, setFilterValue] = useState('');
 
@@ -17,7 +17,6 @@ const DataFiltering = ({ data, setData, addToHistory }) => {
       ...data.slice(1).filter(row => row[columnIndex].toString().includes(filterValue))
     ];
 
-    addToHistory(filteredData);
     setData(filteredData);
   };
 

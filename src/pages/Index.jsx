@@ -9,11 +9,7 @@ import StatisticalAnalysis from './StatisticalAnalysis';
 import DataVisualization from './DataVisualization';
 import DataPreprocessing from './DataPreprocessing';
 import MachineLearning from './MachineLearning';
-import DataExport from './DataExport';
 import DataFiltering from './DataFiltering';
-import DataSorting from './DataSorting';
-import DataTransformation from './DataTransformation';
-import CorrelationAnalysis from './CorrelationAnalysis';
 
 const Index = () => {
   const [data, setData] = useState(null);
@@ -57,22 +53,12 @@ const Index = () => {
           <Card className="overflow-hidden shadow-xl">
             <CardContent className="p-6">
               <Tabs defaultValue="upload" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-8 gap-2">
-                  {['upload', 'preprocessing', 'analysis', 'visualization', 'ml'].map((value, index) => (
+                <TabsList className="grid w-full grid-cols-6 mb-8 gap-2">
+                  {['upload', 'preprocessing', 'analysis', 'visualization', 'ml', 'filtering'].map((value, index) => (
                     <React.Fragment key={value}>
                       <TabsTrigger value={value} className="relative">
                         {value.charAt(0).toUpperCase() + value.slice(1)}
-                        {index < 4 && <ArrowRight className="pipeline-arrow" />}
-                      </TabsTrigger>
-                    </React.Fragment>
-                  ))}
-                </TabsList>
-                <TabsList className="grid w-full grid-cols-5 mb-8 gap-2">
-                  {['export', 'filtering', 'sorting', 'transformation', 'correlation'].map((value, index) => (
-                    <React.Fragment key={value}>
-                      <TabsTrigger value={value} className="relative">
-                        {value.charAt(0).toUpperCase() + value.slice(1)}
-                        {index < 4 && <ArrowRight className="pipeline-arrow" />}
+                        {index < 5 && <ArrowRight className="pipeline-arrow" />}
                       </TabsTrigger>
                     </React.Fragment>
                   ))}
@@ -92,20 +78,8 @@ const Index = () => {
                 <TabsContent value="ml">
                   <MachineLearning data={data} />
                 </TabsContent>
-                <TabsContent value="export">
-                  <DataExport data={data} />
-                </TabsContent>
                 <TabsContent value="filtering">
-                  <DataFiltering data={data} setData={setData} />
-                </TabsContent>
-                <TabsContent value="sorting">
-                  <DataSorting data={data} setData={setData} />
-                </TabsContent>
-                <TabsContent value="transformation">
-                  <DataTransformation data={data} setData={setData} />
-                </TabsContent>
-                <TabsContent value="correlation">
-                  <CorrelationAnalysis data={data} />
+                  <DataFiltering data={data} setData={setData} addToHistory={(newData) => setData(newData)} />
                 </TabsContent>
               </Tabs>
             </CardContent>
