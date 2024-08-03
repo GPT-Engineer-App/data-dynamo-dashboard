@@ -112,6 +112,19 @@ const Index = () => {
           </Card>
         </div>
       </main>
+      <footer className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg mt-12`}>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-center items-center space-x-6">
+          <a href="https://www.linkedin.com/in/mihai-iordache-676444187/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600">
+            LinkedIn
+          </a>
+          <a href="https://github.com/bogdansys" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800">
+            GitHub
+          </a>
+          <a href="mailto:bogdanmihai453@gmail.com" className="text-green-500 hover:text-green-600">
+            Email
+          </a>
+        </div>
+      </footer>
     </div>
   );
 };
