@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
@@ -17,6 +19,8 @@ const MachineLearning = ({ data }) => {
   const [trainedModel, setTrainedModel] = useState(null);
   const [predictionInputs, setPredictionInputs] = useState({});
   const [prediction, setPrediction] = useState(null);
+  const [trainingProgress, setTrainingProgress] = useState(0);
+  const [featureImportance, setFeatureImportance] = useState([]);
 
   useEffect(() => {
     if (featureColumns.length > 0) {
@@ -30,21 +34,42 @@ const MachineLearning = ({ data }) => {
 
   const handleTrain = () => {
     // Simulating ML training and prediction
-    setResults({
-      accuracy: Math.random().toFixed(2),
-      precision: Math.random().toFixed(2),
-      recall: Math.random().toFixed(2),
-      f1Score: Math.random().toFixed(2),
-    });
+    setTrainingProgress(0);
+    const interval = setInterval(() => {
+      setTrainingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 500);
 
-    // Simulating a trained model (in reality, this would be the actual trained model)
-    setTrainedModel({
-      predict: (inputs) => {
-        // This is a dummy prediction function
-        // In a real scenario, this would use the actual trained model to make predictions
-        return Math.random().toFixed(2);
-      }
-    });
+    setTimeout(() => {
+      clearInterval(interval);
+      setResults({
+        accuracy: Math.random().toFixed(2),
+        precision: Math.random().toFixed(2),
+        recall: Math.random().toFixed(2),
+        f1Score: Math.random().toFixed(2),
+      });
+
+      // Simulating feature importance
+      const importance = featureColumns.map(feature => ({
+        feature,
+        importance: Math.random().toFixed(2)
+      }));
+      setFeatureImportance(importance.sort((a, b) => b.importance - a.importance));
+
+      // Simulating a trained model (in reality, this would be the actual trained model)
+      setTrainedModel({
+        predict: (inputs) => {
+          // This is a dummy prediction function
+          // In a real scenario, this would use the actual trained model to make predictions
+          return Math.random().toFixed(2);
+        }
+      });
+    }, 5000);
   };
 
   const handlePredictionInputChange = (feature, value) => {
@@ -153,8 +178,15 @@ const MachineLearning = ({ data }) => {
         </Tooltip>
       </TooltipProvider>
 
+      {trainingProgress > 0 && trainingProgress < 100 && (
+        <div className="mt-4">
+          <Label>Training Progress</Label>
+          <Progress value={trainingProgress} className="w-full" />
+        </div>
+      )}
+
       {results && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="mt-4 grid grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle>Accuracy</CardTitle>
@@ -179,6 +211,21 @@ const MachineLearning = ({ data }) => {
             </CardHeader>
             <CardContent>{results.f1Score}</CardContent>
           </Card>
+        </div>
+      )}
+
+      {featureImportance.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">Feature Importance</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={featureImportance}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="feature" />
+              <YAxis />
+              <RechartsTooltip />
+              <Bar dataKey="importance" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
 
