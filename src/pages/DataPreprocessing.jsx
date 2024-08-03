@@ -13,8 +13,6 @@ const DataPreprocessing = ({ data, setData }) => {
   const [preprocessingTasks, setPreprocessingTasks] = useState([]);
   const [customValue, setCustomValue] = useState('');
   const [normalizationRange, setNormalizationRange] = useState([0, 1]);
-  const [visualizationData, setVisualizationData] = useState([]);
-  const [processedData, setProcessedData] = useState(null);
   const addPreprocessingTask = () => {
     setPreprocessingTasks([...preprocessingTasks, { column: '', method: '' }]);
   };
@@ -87,36 +85,8 @@ const DataPreprocessing = ({ data, setData }) => {
       }
     });
 
-    setProcessedData(newData);
-    updateVisualization(newData);
+    setData(newData);
   };
-
-  const updateVisualization = (newData) => {
-    if (!newData || newData.length < 2) return;
-    
-    const headers = newData[0];
-    const visualData = newData.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((header, index) => {
-        obj[header] = parseFloat(row[index]);
-      });
-      return obj;
-    });
-    
-    setVisualizationData(visualData);
-  };
-
-  useEffect(() => {
-    if (data) {
-      updateVisualization(data);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (processedData) {
-      updateVisualization(processedData);
-    }
-  }, [processedData]);
 
   const downloadCSV = () => {
     if (!data) return;
@@ -204,49 +174,14 @@ const DataPreprocessing = ({ data, setData }) => {
         </Tooltip>
       </TooltipProvider>
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button onClick={downloadCSV}>Download Processed Data</Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Download the processed data as a CSV file</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Important</AlertTitle>
-        <AlertDescription>
-          After preprocessing, please download the new CSV and upload it again for correct usage in subsequent steps.
-        </AlertDescription>
-      </Alert>
-
-      {visualizationData.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">Data Visualization</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-              <CartesianGrid />
-              <XAxis dataKey={Object.keys(visualizationData[0])[0]} type="number" />
-              <YAxis dataKey={Object.keys(visualizationData[0])[1]} type="number" />
-              <ZAxis dataKey={Object.keys(visualizationData[0])[2]} range={[64, 144]} />
-              <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
-              <Scatter name="Data" data={visualizationData} fill="#8884d8" />
-            </ScatterChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {processedData && (
+      {data && (
         <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Processed Data Preview</h3>
+          <h3 className="text-lg font-semibold mb-2">Data Preview</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {processedData[0].map((header, index) => (
+                  {data[0].map((header, index) => (
                     <th key={index} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {header}
                     </th>
@@ -254,7 +189,7 @@ const DataPreprocessing = ({ data, setData }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {processedData.slice(1, 6).map((row, rowIndex) => (
+                {data.slice(1, 6).map((row, rowIndex) => (
                   <tr key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                       <td key={cellIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
