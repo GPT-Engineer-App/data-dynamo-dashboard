@@ -47,9 +47,7 @@ const CorrelationAnalysis = ({ data }) => {
   return (
     <div className="space-y-4">
       <Select
-        multiple
-        value={selectedColumns}
-        onValueChange={setSelectedColumns}
+        onValueChange={(value) => setSelectedColumns(prev => [...prev, value])}
       >
         <SelectTrigger>
           <SelectValue placeholder="Select columns for correlation analysis" />
@@ -60,6 +58,7 @@ const CorrelationAnalysis = ({ data }) => {
           ))}
         </SelectContent>
       </Select>
+      <div>Selected columns: {selectedColumns.join(', ')}</div>
       {correlationData.length > 0 && (
         <ResponsiveContainer width="100%" height={400}>
           <ScatterChart>

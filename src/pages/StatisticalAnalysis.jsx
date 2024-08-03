@@ -10,8 +10,16 @@ const StatisticalAnalysis = ({ data }) => {
 
   useEffect(() => {
     if (data && selectedColumn) {
-      const columnData = data.slice(1).map(row => parseFloat(row[data[0].indexOf(selectedColumn)])).filter(val => !isNaN(val));
+      const columnIndex = data[0].indexOf(selectedColumn);
+      if (columnIndex === -1) return;
+
+      const columnData = data.slice(1).map(row => parseFloat(row[columnIndex])).filter(val => !isNaN(val));
       
+      if (columnData.length === 0) {
+        setStatistics(null);
+        return;
+      }
+
       const mean = columnData.reduce((sum, val) => sum + val, 0) / columnData.length;
       const sortedData = [...columnData].sort((a, b) => a - b);
       const median = sortedData[Math.floor(sortedData.length / 2)];
@@ -21,6 +29,8 @@ const StatisticalAnalysis = ({ data }) => {
       const stdDev = Math.sqrt(variance);
 
       setStatistics({ mean, median, mode, stdDev });
+    } else {
+      setStatistics(null);
     }
   }, [data, selectedColumn]);
 
