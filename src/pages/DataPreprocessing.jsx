@@ -13,8 +13,6 @@ const DataPreprocessing = ({ data, setData }) => {
   const [preprocessingTasks, setPreprocessingTasks] = useState([]);
   const [customValue, setCustomValue] = useState('');
   const [normalizationRange, setNormalizationRange] = useState([0, 1]);
-  const [removeOutliers, setRemoveOutliers] = useState(false);
-
   const addPreprocessingTask = () => {
     setPreprocessingTasks([...preprocessingTasks, { column: '', method: '' }]);
   };
@@ -70,30 +68,22 @@ const DataPreprocessing = ({ data, setData }) => {
           break;
         case 'normalize':
           const [min, max] = normalizationRange;
-          const values = newData.slice(1).map(row => parseFloat(row[columnIndex]));
+          const values = newData.slice(1).map(row => parseFloat(row[columnIndex])).filter(val => !isNaN(val));
           const minVal = Math.min(...values);
           const maxVal = Math.max(...values);
           newData = newData.map((row, index) => {
             if (index === 0) return row;
             let newRow = [...row];
-            const normalizedValue = (parseFloat(row[columnIndex]) - minVal) / (maxVal - minVal) * (max - min) + min;
-            newRow[columnIndex] = normalizedValue.toFixed(2);
+            const value = parseFloat(row[columnIndex]);
+            if (!isNaN(value)) {
+              const normalizedValue = (value - minVal) / (maxVal - minVal) * (max - min) + min;
+              newRow[columnIndex] = normalizedValue.toFixed(2);
+            }
             return newRow;
           });
           break;
       }
 
-      if (removeOutliers) {
-        const values = newData.slice(1).map(row => parseFloat(row[columnIndex]));
-        const q1 = values[Math.floor(values.length / 4)];
-        const q3 = values[Math.floor(values.length * 3 / 4)];
-        const iqr = q3 - q1;
-        const lowerBound = q1 - 1.5 * iqr;
-        const upperBound = q3 + 1.5 * iqr;
-        newData = newData.filter((row, index) => 
-          index === 0 || (parseFloat(row[columnIndex]) >= lowerBound && parseFloat(row[columnIndex]) <= upperBound)
-        );
-      }
     });
 
     setData(newData);
@@ -173,14 +163,6 @@ const DataPreprocessing = ({ data, setData }) => {
         </div>
       )}
 
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="remove-outliers"
-          checked={removeOutliers}
-          onCheckedChange={setRemoveOutliers}
-        />
-        <Label htmlFor="remove-outliers">Remove outliers</Label>
-      </div>
 
       <TooltipProvider>
         <Tooltip>
