@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
@@ -141,7 +142,16 @@ const MachineLearning = ({ data }) => {
         </div>
       )}
 
-      <Button onClick={handleTrain}>Train Model</Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={handleTrain}>Train Model</Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Train the selected machine learning model on your data</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {results && (
         <div className="grid grid-cols-2 gap-4">
@@ -186,7 +196,16 @@ const MachineLearning = ({ data }) => {
               />
             </div>
           ))}
-          <Button onClick={handlePredict}>Predict</Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handlePredict}>Predict</Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Make a prediction using the trained model</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {prediction !== null && (
             <Card>
               <CardHeader>

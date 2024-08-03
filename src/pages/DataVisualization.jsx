@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DataVisualization = ({ data }) => {
@@ -40,15 +41,24 @@ const DataVisualization = ({ data }) => {
 
   return (
     <div className="space-y-4">
-      <Select onValueChange={setChartType}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select chart type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="bar">Bar Chart</SelectItem>
-          <SelectItem value="scatter">Scatter Plot</SelectItem>
-        </SelectContent>
-      </Select>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Select onValueChange={setChartType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select chart type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bar">Bar Chart</SelectItem>
+                <SelectItem value="scatter">Scatter Plot</SelectItem>
+              </SelectContent>
+            </Select>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Choose the type of chart to visualize your data</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {chartType === 'bar' && (
         <Select onValueChange={setSelectedColumn}>

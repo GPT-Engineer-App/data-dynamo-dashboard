@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const DataPreprocessing = ({ data, setData }) => {
   const [selectedColumn, setSelectedColumn] = useState('');
@@ -143,7 +144,16 @@ const DataPreprocessing = ({ data, setData }) => {
         <Label htmlFor="remove-outliers">Remove outliers</Label>
       </div>
 
-      <Button onClick={handlePreprocessing}>Process Data</Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={handlePreprocessing}>Process Data</Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Apply selected preprocessing method to the data</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

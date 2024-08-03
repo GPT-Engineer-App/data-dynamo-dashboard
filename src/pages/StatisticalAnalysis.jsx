@@ -47,16 +47,25 @@ const StatisticalAnalysis = ({ data }) => {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Select onValueChange={setSelectedColumn}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a column" />
-              </SelectTrigger>
-              <SelectContent>
-                {data[0].map((header, index) => (
-                  <SelectItem key={index} value={header}>{header}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Select onValueChange={setSelectedColumn}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a column" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {data[0].map((header, index) => (
+                        <SelectItem key={index} value={header}>{header}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Choose a column to analyze</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </TooltipTrigger>
           <TooltipContent>
             <p>Choose a column to analyze</p>
@@ -95,7 +104,16 @@ const StatisticalAnalysis = ({ data }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button onClick={exportStatistics}>Export Statistics</Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={exportStatistics}>Export Statistics</Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Download statistics as CSV</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Download statistics as CSV</p>

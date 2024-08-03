@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const DataExport = ({ data }) => {
   const [exportFormat, setExportFormat] = useState('csv');
@@ -38,16 +39,34 @@ const DataExport = ({ data }) => {
 
   return (
     <div className="space-y-4">
-      <Select onValueChange={setExportFormat}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select export format" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="csv">CSV</SelectItem>
-          <SelectItem value="json">JSON</SelectItem>
-        </SelectContent>
-      </Select>
-      <Button onClick={exportData}>Export Data</Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Select onValueChange={setExportFormat}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select export format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="csv">CSV</SelectItem>
+                <SelectItem value="json">JSON</SelectItem>
+              </SelectContent>
+            </Select>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Choose the format for exporting your data</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={exportData}>Export Data</Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Download your data in the selected format</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };
