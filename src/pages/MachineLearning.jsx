@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 const MachineLearning = ({ data }) => {
@@ -91,19 +92,40 @@ const MachineLearning = ({ data }) => {
 
   return (
     <div className="space-y-4">
-      <Select onValueChange={setSelectedAlgorithm}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select ML algorithm" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="linear_regression">Linear Regression</SelectItem>
-          <SelectItem value="logistic_regression">Logistic Regression</SelectItem>
-          <SelectItem value="decision_tree">Decision Tree</SelectItem>
-          <SelectItem value="random_forest">Random Forest</SelectItem>
-          <SelectItem value="svm">Support Vector Machine</SelectItem>
-          <SelectItem value="knn">K-Nearest Neighbors</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="flex space-x-4">
+        <Select onValueChange={setSelectedAlgorithm}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select ML algorithm" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="linear_regression">Linear Regression</SelectItem>
+            <SelectItem value="logistic_regression">Logistic Regression</SelectItem>
+            <SelectItem value="decision_tree">Decision Tree</SelectItem>
+            <SelectItem value="random_forest">Random Forest</SelectItem>
+            <SelectItem value="svm">Support Vector Machine</SelectItem>
+            <SelectItem value="knn">K-Nearest Neighbors</SelectItem>
+          </SelectContent>
+        </Select>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">How does it work?</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>How Machine Learning Works</DialogTitle>
+              <DialogDescription>
+                1. Select a machine learning algorithm.<br/>
+                2. Choose the target column (what you want to predict).<br/>
+                3. Select feature columns (data used for prediction).<br/>
+                4. Adjust hyperparameters if available.<br/>
+                5. Train the model on your data.<br/>
+                6. View model performance metrics.<br/>
+                7. Use the trained model to make predictions on new data.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <Select onValueChange={setTargetColumn}>
         <SelectTrigger>

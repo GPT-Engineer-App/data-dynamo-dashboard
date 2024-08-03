@@ -7,9 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import DataUpload from './DataUpload';
 import StatisticalAnalysis from './StatisticalAnalysis';
 import DataVisualization from './DataVisualization';
-import DataPreprocessing from './DataPreprocessing';
 import MachineLearning from './MachineLearning';
-import DataFiltering from './DataFiltering';
 
 const Index = () => {
   const [data, setData] = useState(null);
@@ -53,21 +51,18 @@ const Index = () => {
           <Card className="overflow-hidden shadow-xl">
             <CardContent className="p-6">
               <Tabs defaultValue="upload" className="w-full">
-                <TabsList className="grid w-full grid-cols-6 mb-8 gap-2">
-                  {['upload', 'preprocessing', 'analysis', 'visualization', 'ml', 'filtering'].map((value, index) => (
+                <TabsList className="grid w-full grid-cols-4 mb-8 gap-2">
+                  {['upload', 'analysis', 'visualization', 'ml'].map((value, index) => (
                     <React.Fragment key={value}>
                       <TabsTrigger value={value} className="relative">
                         {value.charAt(0).toUpperCase() + value.slice(1)}
-                        {index < 5 && <ArrowRight className="pipeline-arrow" />}
+                        {index < 3 && <ArrowRight className="pipeline-arrow" />}
                       </TabsTrigger>
                     </React.Fragment>
                   ))}
                 </TabsList>
                 <TabsContent value="upload">
                   <DataUpload setData={setData} />
-                </TabsContent>
-                <TabsContent value="preprocessing">
-                  <DataPreprocessing data={data} setData={setData} />
                 </TabsContent>
                 <TabsContent value="analysis">
                   <StatisticalAnalysis data={data} />
@@ -77,9 +72,6 @@ const Index = () => {
                 </TabsContent>
                 <TabsContent value="ml">
                   <MachineLearning data={data} />
-                </TabsContent>
-                <TabsContent value="filtering">
-                  <DataFiltering data={data} setData={setData} addToHistory={(newData) => setData(newData)} />
                 </TabsContent>
               </Tabs>
             </CardContent>

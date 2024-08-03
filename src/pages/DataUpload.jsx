@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DataQualityAssessment from './DataQualityAssessment';
 
 const DataUpload = ({ setData }) => {
@@ -24,16 +25,35 @@ const DataUpload = ({ setData }) => {
 
   return (
     <div className="space-y-4">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Input type="file" accept=".csv" onChange={handleFileUpload} />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Upload a CSV file to analyze</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="space-y-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Input type="file" accept=".csv" onChange={handleFileUpload} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Upload a CSV file to analyze</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">How does it work?</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>How Data Upload Works</DialogTitle>
+              <DialogDescription>
+                1. Select a CSV file from your computer.<br/>
+                2. The file is read and parsed into a table format.<br/>
+                3. A preview of the data is displayed.<br/>
+                4. Data quality assessment is performed automatically.<br/>
+                5. You can then proceed to analyze or visualize the data.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
       {parsedData && (
         <>
           <Table>

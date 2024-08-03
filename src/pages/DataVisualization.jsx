@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { BarChart, Bar, ScatterChart, Scatter, LineChart, Line, AreaChart, Area, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DataVisualization = ({ data }) => {
   const [chartType, setChartType] = useState('bar');
@@ -41,24 +43,47 @@ const DataVisualization = ({ data }) => {
 
   return (
     <div className="space-y-4">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Select onValueChange={setChartType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select chart type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bar">Bar Chart</SelectItem>
-                <SelectItem value="scatter">Scatter Plot</SelectItem>
-              </SelectContent>
-            </Select>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Choose the type of chart to visualize your data</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="space-y-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Select onValueChange={setChartType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select chart type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bar">Bar Chart</SelectItem>
+                  <SelectItem value="scatter">Scatter Plot</SelectItem>
+                  <SelectItem value="line">Line Chart</SelectItem>
+                  <SelectItem value="area">Area Chart</SelectItem>
+                  <SelectItem value="pie">Pie Chart</SelectItem>
+                </SelectContent>
+              </Select>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Choose the type of chart to visualize your data</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">How does it work?</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>How Data Visualization Works</DialogTitle>
+              <DialogDescription>
+                1. Select a chart type from the dropdown menu.<br/>
+                2. Choose the column(s) you want to visualize.<br/>
+                3. The system processes the data and creates the chart.<br/>
+                4. The chart is displayed using the Recharts library.<br/>
+                5. You can interact with the chart (hover, zoom, etc.).<br/>
+                6. Different chart types are suitable for different data types and relationships.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {chartType === 'bar' && (
         <Select onValueChange={setSelectedColumn}>

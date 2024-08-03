@@ -3,6 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const StatisticalAnalysis = ({ data }) => {
   const [selectedColumn, setSelectedColumn] = useState('');
@@ -54,34 +55,47 @@ const StatisticalAnalysis = ({ data }) => {
 
   return (
     <div className="space-y-4">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Select onValueChange={setSelectedColumn}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a column" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {data[0].map((header, index) => (
-                        <SelectItem key={index} value={header}>{header}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Choose a column to analyze</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Choose a column to analyze</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="space-y-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Select onValueChange={setSelectedColumn}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a column" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data[0].map((header, index) => (
+                    <SelectItem key={index} value={header}>{header}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Choose a column to analyze</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">How does it work?</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>How Statistical Analysis Works</DialogTitle>
+              <DialogDescription>
+                1. Select a column from your dataset.<br/>
+                2. The system calculates key statistics:<br/>
+                   - Mean: The average value<br/>
+                   - Median: The middle value<br/>
+                   - Mode: The most frequent value<br/>
+                   - Standard Deviation: Measure of data spread<br/>
+                3. Results are displayed in easy-to-read cards.<br/>
+                4. You can export the statistics as a CSV file.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {statistics && (
         <>
