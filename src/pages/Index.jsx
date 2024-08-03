@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoonIcon, SunIcon } from "lucide-react";
+import { MoonIcon, SunIcon, ArrowRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import DataUpload from './DataUpload';
 import StatisticalAnalysis from './StatisticalAnalysis';
@@ -33,14 +33,15 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
-      <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow`}>
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Data Insight Hub</h1>
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+      <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+          <h1 className="text-4xl font-extrabold gradient-text mb-2">Data Insight Hub</h1>
+          <p className="text-lg text-muted-foreground mb-4">by Iordache Mihai Bogdan</p>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button onClick={toggleDarkMode} variant="outline" size="icon">
+                <Button onClick={toggleDarkMode} variant="outline" size="icon" className="absolute top-4 right-4">
                   {darkMode ? <SunIcon className="h-[1.2rem] w-[1.2rem]" /> : <MoonIcon className="h-[1.2rem] w-[1.2rem]" />}
                 </Button>
               </TooltipTrigger>
@@ -51,24 +52,30 @@ const Index = () => {
           </TooltipProvider>
         </div>
       </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <Card>
+      <main className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="overflow-hidden shadow-xl">
             <CardContent className="p-6">
               <Tabs defaultValue="upload" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4">
-                  <TabsTrigger value="upload">Upload Data</TabsTrigger>
-                  <TabsTrigger value="preprocessing">Data Preprocessing</TabsTrigger>
-                  <TabsTrigger value="analysis">Statistical Analysis</TabsTrigger>
-                  <TabsTrigger value="visualization">Data Visualization</TabsTrigger>
-                  <TabsTrigger value="ml">Machine Learning</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-5 mb-8 gap-2">
+                  {['upload', 'preprocessing', 'analysis', 'visualization', 'ml'].map((value, index) => (
+                    <React.Fragment key={value}>
+                      <TabsTrigger value={value} className="relative">
+                        {value.charAt(0).toUpperCase() + value.slice(1)}
+                        {index < 4 && <ArrowRight className="pipeline-arrow" />}
+                      </TabsTrigger>
+                    </React.Fragment>
+                  ))}
                 </TabsList>
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="export">Data Export</TabsTrigger>
-                  <TabsTrigger value="filtering">Data Filtering</TabsTrigger>
-                  <TabsTrigger value="sorting">Data Sorting</TabsTrigger>
-                  <TabsTrigger value="transformation">Data Transformation</TabsTrigger>
-                  <TabsTrigger value="correlation">Correlation Analysis</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-5 mb-8 gap-2">
+                  {['export', 'filtering', 'sorting', 'transformation', 'correlation'].map((value, index) => (
+                    <React.Fragment key={value}>
+                      <TabsTrigger value={value} className="relative">
+                        {value.charAt(0).toUpperCase() + value.slice(1)}
+                        {index < 4 && <ArrowRight className="pipeline-arrow" />}
+                      </TabsTrigger>
+                    </React.Fragment>
+                  ))}
                 </TabsList>
                 <TabsContent value="upload">
                   <DataUpload setData={setData} />
