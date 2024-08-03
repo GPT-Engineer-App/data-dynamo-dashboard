@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip as RechartsTooltip } from 'recharts';
 
 const DataPreprocessing = ({ data, setData }) => {
   const [preprocessingTasks, setPreprocessingTasks] = useState([]);
   const [customValue, setCustomValue] = useState('');
   const [normalizationRange, setNormalizationRange] = useState([0, 1]);
+  const [visualizationData, setVisualizationData] = useState([]);
   const addPreprocessingTask = () => {
     setPreprocessingTasks([...preprocessingTasks, { column: '', method: '' }]);
   };
@@ -83,11 +85,32 @@ const DataPreprocessing = ({ data, setData }) => {
           });
           break;
       }
-
     });
 
     setData(newData);
+    updateVisualization(newData);
   };
+
+  const updateVisualization = (newData) => {
+    if (!newData || newData.length < 2) return;
+    
+    const headers = newData[0];
+    const visualData = newData.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((header, index) => {
+        obj[header] = parseFloat(row[index]);
+      });
+      return obj;
+    });
+    
+    setVisualizationData(visualData);
+  };
+
+  useEffect(() => {
+    if (data) {
+      updateVisualization(data);
+    }
+  }, [data]);
 
   const downloadCSV = () => {
     if (!data) return;
@@ -193,6 +216,22 @@ const DataPreprocessing = ({ data, setData }) => {
           After preprocessing, please download the new CSV and upload it again for correct usage in subsequent steps.
         </AlertDescription>
       </Alert>
+
+      {visualizationData.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-4">Data Visualization</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <CartesianGrid />
+              <XAxis dataKey={Object.keys(visualizationData[0])[0]} type="number" />
+              <YAxis dataKey={Object.keys(visualizationData[0])[1]} type="number" />
+              <ZAxis dataKey={Object.keys(visualizationData[0])[2]} range={[64, 144]} />
+              <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Scatter name="Data" data={visualizationData} fill="#8884d8" />
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {data && (
         <div className="mt-4">
