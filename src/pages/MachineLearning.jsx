@@ -9,7 +9,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { useState, useEffect } from 'react';
 import { SimpleLinearRegression, PolynomialRegression } from 'ml-regression';
+import { KMeans } from 'ml-kmeans';
+import { RandomForestRegression as RandomForest } from 'ml-random-forest';
+import { DecisionTreeRegression as DecisionTree } from 'ml-cart';
+import { Matrix } from 'ml-matrix';
+import { crossValidation } from 'ml-cross-validation';
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
@@ -23,6 +29,7 @@ const MachineLearning = ({ data }) => {
   const [prediction, setPrediction] = useState(null);
   const [trainingProgress, setTrainingProgress] = useState(0);
   const [featureImportance, setFeatureImportance] = useState([]);
+  const [crossValidationResults, setCrossValidationResults] = useState(null);
 
   useEffect(() => {
     if (featureColumns.length > 0) {
@@ -59,9 +66,26 @@ const MachineLearning = ({ data }) => {
         model = new SimpleLinearRegression(X_train.map(x => x[0]), y_train);
         break;
       case 'polynomial_regression':
-        model = new PolynomialRegression(X_train.map(x => x[0]), y_train, 2);
+        model = new PolynomialRegression(X_train.map(x => x[0]), y_train, hyperparameters.degree || 2);
         break;
-      // Add more algorithms as needed
+      case 'random_forest':
+        model = new RandomForest({
+          nEstimators: hyperparameters.n_estimators || 100,
+          maxDepth: hyperparameters.max_depth || 10,
+          treeOptions: { maxFeatures: 'sqrt' }
+        });
+        model.train(new Matrix(X_train), Matrix.columnVector(y_train));
+        break;
+      case 'decision_tree':
+        model = new DecisionTree({
+          maxDepth: hyperparameters.max_depth || 10,
+        });
+        model.train(new Matrix(X_train), Matrix.columnVector(y_train));
+        break;
+      case 'kmeans':
+        model = new KMeans(hyperparameters.n_clusters || 3);
+        model.train(X_train);
+        break;
       default:
         clearInterval(interval);
         setTrainingProgress(0);
@@ -69,7 +93,13 @@ const MachineLearning = ({ data }) => {
     }
 
     // Calculate metrics
-    const y_pred = X_test.map(x => model.predict(x));
+    let y_pred;
+    if (selectedAlgorithm === 'kmeans') {
+      y_pred = model.predict(X_test);
+    } else {
+      y_pred = X_test.map(x => model.predict(x));
+    }
+    
     const mse = y_pred.reduce((sum, pred, i) => sum + Math.pow(pred - y_test[i], 2), 0) / y_pred.length;
     const rmse = Math.sqrt(mse);
     const r2 = 1 - (mse / y_test.reduce((sum, y) => sum + Math.pow(y - y_test.reduce((a, b) => a + b) / y_test.length, 2), 0));
@@ -82,13 +112,26 @@ const MachineLearning = ({ data }) => {
       r2: r2.toFixed(4),
     });
 
-    // Feature importance (for simple linear regression, it's just the coefficient)
+    // Feature importance
     if (selectedAlgorithm === 'linear_regression') {
       setFeatureImportance([{
         feature: featureColumns[0],
         importance: Math.abs(model.slope).toFixed(4)
       }]);
+    } else if (selectedAlgorithm === 'random_forest') {
+      const importance = model.featureImportance();
+      setFeatureImportance(featureColumns.map((feature, index) => ({
+        feature,
+        importance: importance[index].toFixed(4)
+      })));
     }
+
+    // Cross-validation
+    const cvResults = crossValidation(model, new Matrix(X), Matrix.columnVector(y), 5);
+    setCrossValidationResults({
+      mean: cvResults.mean.toFixed(4),
+      standardDeviation: cvResults.standardDeviation.toFixed(4)
+    });
 
     setTrainedModel(model);
   };
@@ -121,6 +164,9 @@ const MachineLearning = ({ data }) => {
           <SelectContent>
             <SelectItem value="linear_regression">Linear Regression</SelectItem>
             <SelectItem value="polynomial_regression">Polynomial Regression</SelectItem>
+            <SelectItem value="random_forest">Random Forest</SelectItem>
+            <SelectItem value="decision_tree">Decision Tree</SelectItem>
+            <SelectItem value="kmeans">K-Means Clustering</SelectItem>
           </SelectContent>
         </Select>
         <Dialog>
@@ -184,24 +230,46 @@ const MachineLearning = ({ data }) => {
         <div>Test Size: {testSize}</div>
       </div>
 
+      {selectedAlgorithm === 'polynomial_regression' && (
+        <div className="space-y-2">
+          <Label>Polynomial Degree</Label>
+          <Input
+            type="number"
+            value={hyperparameters.degree || 2}
+            onChange={(e) => handleHyperparameterChange('degree', parseInt(e.target.value))}
+          />
+        </div>
+      )}
+
+      {(selectedAlgorithm === 'random_forest' || selectedAlgorithm === 'decision_tree') && (
+        <div className="space-y-2">
+          <Label>Max Depth</Label>
+          <Input
+            type="number"
+            value={hyperparameters.max_depth || 10}
+            onChange={(e) => handleHyperparameterChange('max_depth', parseInt(e.target.value))}
+          />
+        </div>
+      )}
+
       {selectedAlgorithm === 'random_forest' && (
         <div className="space-y-2">
           <Label>Number of Trees</Label>
           <Input
             type="number"
             value={hyperparameters.n_estimators || 100}
-            onChange={(e) => handleHyperparameterChange('n_estimators', e.target.value)}
+            onChange={(e) => handleHyperparameterChange('n_estimators', parseInt(e.target.value))}
           />
         </div>
       )}
 
-      {selectedAlgorithm === 'knn' && (
+      {selectedAlgorithm === 'kmeans' && (
         <div className="space-y-2">
-          <Label>Number of Neighbors</Label>
+          <Label>Number of Clusters</Label>
           <Input
             type="number"
-            value={hyperparameters.n_neighbors || 5}
-            onChange={(e) => handleHyperparameterChange('n_neighbors', e.target.value)}
+            value={hyperparameters.n_clusters || 3}
+            onChange={(e) => handleHyperparameterChange('n_clusters', parseInt(e.target.value))}
           />
         </div>
       )}
@@ -237,6 +305,23 @@ const MachineLearning = ({ data }) => {
               <CardTitle>R-squared</CardTitle>
             </CardHeader>
             <CardContent>{results.r2}</CardContent>
+          </Card>
+        </div>
+      )}
+
+      {crossValidationResults && (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cross-Validation Mean</CardTitle>
+            </CardHeader>
+            <CardContent>{crossValidationResults.mean}</CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Cross-Validation Std Dev</CardTitle>
+            </CardHeader>
+            <CardContent>{crossValidationResults.standardDeviation}</CardContent>
           </Card>
         </div>
       )}
