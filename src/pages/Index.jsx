@@ -30,7 +30,7 @@ const Index = () => {
     <div className={`min-h-screen ${darkMode ? 'dark bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
       <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-          <h1 className="text-4xl font-extrabold gradient-text mb-2">Data Insight Hub</h1>
+          <h1 className="text-4xl font-extrabold gradient-text mb-2">ML and Data Insights Hub</h1>
           <p className="text-lg text-muted-foreground mb-4">by Iordache Mihai Bogdan</p>
           <TooltipProvider>
             <Tooltip>
