@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DataVisualization = ({ data }) => {
   const [chartType, setChartType] = useState('bar');
@@ -117,7 +117,7 @@ const DataVisualization = ({ data }) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="x" name={selectedColumnX} />
             <YAxis dataKey="y" name={selectedColumnY} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+            <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
             <Legend />
             <Scatter name={`${selectedColumnX} vs ${selectedColumnY}`} data={chartData} fill="#8884d8" />
           </ScatterChart>
