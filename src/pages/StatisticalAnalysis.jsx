@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const StatisticalAnalysis = ({ data }) => {
   const [selectedColumn, setSelectedColumn] = useState('');
@@ -22,48 +24,85 @@ const StatisticalAnalysis = ({ data }) => {
     }
   }, [data, selectedColumn]);
 
+  const exportStatistics = () => {
+    if (!statistics) return;
+    const csvContent = `Statistic,Value\nMean,${statistics.mean.toFixed(2)}\nMedian,${statistics.median.toFixed(2)}\nMode,${statistics.mode.toFixed(2)}\nStandard Deviation,${statistics.stdDev.toFixed(2)}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "statistics.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   if (!data) return <div>Please upload data first.</div>;
 
   return (
     <div className="space-y-4">
-      <Select onValueChange={setSelectedColumn}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select a column" />
-        </SelectTrigger>
-        <SelectContent>
-          {data[0].map((header, index) => (
-            <SelectItem key={index} value={header}>{header}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Select onValueChange={setSelectedColumn}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a column" />
+              </SelectTrigger>
+              <SelectContent>
+                {data[0].map((header, index) => (
+                  <SelectItem key={index} value={header}>{header}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Choose a column to analyze</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {statistics && (
-        <div className="grid grid-cols-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mean</CardTitle>
-            </CardHeader>
-            <CardContent>{statistics.mean.toFixed(2)}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Median</CardTitle>
-            </CardHeader>
-            <CardContent>{statistics.median.toFixed(2)}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Mode</CardTitle>
-            </CardHeader>
-            <CardContent>{statistics.mode.toFixed(2)}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Standard Deviation</CardTitle>
-            </CardHeader>
-            <CardContent>{statistics.stdDev.toFixed(2)}</CardContent>
-          </Card>
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Mean</CardTitle>
+              </CardHeader>
+              <CardContent>{statistics.mean.toFixed(2)}</CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Median</CardTitle>
+              </CardHeader>
+              <CardContent>{statistics.median.toFixed(2)}</CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Mode</CardTitle>
+              </CardHeader>
+              <CardContent>{statistics.mode.toFixed(2)}</CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Standard Deviation</CardTitle>
+              </CardHeader>
+              <CardContent>{statistics.stdDev.toFixed(2)}</CardContent>
+            </Card>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={exportStatistics}>Export Statistics</Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download statistics as CSV</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </>
       )}
     </div>
   );

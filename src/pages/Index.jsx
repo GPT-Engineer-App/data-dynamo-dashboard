@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import DataUpload from './DataUpload';
 import StatisticalAnalysis from './StatisticalAnalysis';
 import DataVisualization from './DataVisualization';
@@ -14,11 +15,9 @@ import DataSorting from './DataSorting';
 import DataTransformation from './DataTransformation';
 import CorrelationAnalysis from './CorrelationAnalysis';
 
-const Index = () => {
+const DataInsightHub = () => {
   const [data, setData] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -33,44 +32,29 @@ const Index = () => {
     document.body.classList.toggle('dark', newDarkMode);
   };
 
-  const addToHistory = (newData) => {
-    const newHistory = [...history.slice(0, historyIndex + 1), newData];
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  };
-
-  const undo = () => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setData(history[historyIndex - 1]);
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setData(history[historyIndex + 1]);
-    }
-  };
-
   return (
     <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
       <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow`}>
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Advanced Data Analysis and Visualization Tool</h1>
-          <Button onClick={toggleDarkMode} variant="outline" size="icon">
-            {darkMode ? <SunIcon className="h-[1.2rem] w-[1.2rem]" /> : <MoonIcon className="h-[1.2rem] w-[1.2rem]" />}
-          </Button>
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Data Insight Hub</h1>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={toggleDarkMode} variant="outline" size="icon">
+                  {darkMode ? <SunIcon className="h-[1.2rem] w-[1.2rem]" /> : <MoonIcon className="h-[1.2rem] w-[1.2rem]" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Toggle dark mode</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </header>
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Card>
             <CardContent className="p-6">
-              <div className="mb-4 flex justify-end space-x-2">
-                <Button onClick={undo} disabled={historyIndex <= 0}>Undo</Button>
-                <Button onClick={redo} disabled={historyIndex >= history.length - 1}>Redo</Button>
-              </div>
               <Tabs defaultValue="upload" className="w-full">
                 <TabsList className="grid w-full grid-cols-5 mb-4">
                   <TabsTrigger value="upload">Upload Data</TabsTrigger>
@@ -87,10 +71,10 @@ const Index = () => {
                   <TabsTrigger value="correlation">Correlation Analysis</TabsTrigger>
                 </TabsList>
                 <TabsContent value="upload">
-                  <DataUpload setData={setData} addToHistory={addToHistory} />
+                  <DataUpload setData={setData} />
                 </TabsContent>
                 <TabsContent value="preprocessing">
-                  <DataPreprocessing data={data} setData={setData} addToHistory={addToHistory} />
+                  <DataPreprocessing data={data} setData={setData} />
                 </TabsContent>
                 <TabsContent value="analysis">
                   <StatisticalAnalysis data={data} />
@@ -105,13 +89,13 @@ const Index = () => {
                   <DataExport data={data} />
                 </TabsContent>
                 <TabsContent value="filtering">
-                  <DataFiltering data={data} setData={setData} addToHistory={addToHistory} />
+                  <DataFiltering data={data} setData={setData} />
                 </TabsContent>
                 <TabsContent value="sorting">
-                  <DataSorting data={data} setData={setData} addToHistory={addToHistory} />
+                  <DataSorting data={data} setData={setData} />
                 </TabsContent>
                 <TabsContent value="transformation">
-                  <DataTransformation data={data} setData={setData} addToHistory={addToHistory} />
+                  <DataTransformation data={data} setData={setData} />
                 </TabsContent>
                 <TabsContent value="correlation">
                   <CorrelationAnalysis data={data} />

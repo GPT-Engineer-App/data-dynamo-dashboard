@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const DataUpload = ({ setData }) => {
   const [parsedData, setParsedData] = useState(null);
@@ -22,7 +23,16 @@ const DataUpload = ({ setData }) => {
 
   return (
     <div className="space-y-4">
-      <Input type="file" accept=".csv" onChange={handleFileUpload} />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Input type="file" accept=".csv" onChange={handleFileUpload} />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Upload a CSV file to analyze</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       {parsedData && (
         <Table>
           <TableHeader>
@@ -33,7 +43,7 @@ const DataUpload = ({ setData }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {parsedData.slice(1).map((row, rowIndex) => (
+            {parsedData.slice(1, 6).map((row, rowIndex) => (
               <TableRow key={rowIndex}>
                 {row.map((cell, cellIndex) => (
                   <TableCell key={cellIndex}>{cell}</TableCell>
@@ -44,7 +54,16 @@ const DataUpload = ({ setData }) => {
         </Table>
       )}
       {parsedData && (
-        <Button onClick={() => { setParsedData(null); setData(null); }}>Clear Data</Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => { setParsedData(null); setData(null); }}>Clear Data</Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Remove the uploaded data</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );
