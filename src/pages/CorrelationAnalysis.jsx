@@ -16,9 +16,12 @@ const CorrelationAnalysis = ({ data }) => {
   const calculateCorrelationMatrix = () => {
     const matrix = [];
     for (let i = 0; i < selectedColumns.length; i++) {
-      for (let j = 0; j < selectedColumns.length; j++) {
+      for (let j = i; j < selectedColumns.length; j++) {
         const correlation = i === j ? 1 : calculateCorrelation(selectedColumns[i], selectedColumns[j]);
         matrix.push({ x: selectedColumns[i], y: selectedColumns[j], value: correlation });
+        if (i !== j) {
+          matrix.push({ x: selectedColumns[j], y: selectedColumns[i], value: correlation });
+        }
       }
     }
     return matrix;
@@ -29,6 +32,10 @@ const CorrelationAnalysis = ({ data }) => {
     const index2 = data[0].indexOf(col2);
     const values1 = data.slice(1).map(row => parseFloat(row[index1])).filter(val => !isNaN(val));
     const values2 = data.slice(1).map(row => parseFloat(row[index2])).filter(val => !isNaN(val));
+
+    if (values1.length !== values2.length || values1.length === 0) {
+      return 0;
+    }
 
     const mean1 = values1.reduce((sum, val) => sum + val, 0) / values1.length;
     const mean2 = values2.reduce((sum, val) => sum + val, 0) / values2.length;
@@ -41,7 +48,7 @@ const CorrelationAnalysis = ({ data }) => {
 
     const correlation = deviation1.reduce((sum, val, i) => sum + val * deviation2[i], 0) / Math.sqrt(sum1 * sum2);
 
-    return correlation;
+    return isNaN(correlation) ? 0 : correlation;
   };
 
   return (
