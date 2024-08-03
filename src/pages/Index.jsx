@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DataUpload from './DataUpload';
 import StatisticalAnalysis from './StatisticalAnalysis';
 import DataVisualization from './DataVisualization';
+import DataPreprocessing from './DataPreprocessing';
 
 const Index = () => {
   const [data, setData] = useState(null);
@@ -17,13 +18,17 @@ const Index = () => {
       <main>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Tabs defaultValue="upload" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="upload">Upload Data</TabsTrigger>
+              <TabsTrigger value="preprocessing">Data Preprocessing</TabsTrigger>
               <TabsTrigger value="analysis">Statistical Analysis</TabsTrigger>
               <TabsTrigger value="visualization">Data Visualization</TabsTrigger>
             </TabsList>
             <TabsContent value="upload">
               <DataUpload setData={setData} />
+            </TabsContent>
+            <TabsContent value="preprocessing">
+              <DataPreprocessing data={data} setData={setData} />
             </TabsContent>
             <TabsContent value="analysis">
               <StatisticalAnalysis data={data} />
