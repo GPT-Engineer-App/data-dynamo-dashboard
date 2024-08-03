@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { SimpleLinearRegression, PolynomialRegression } from 'ml-regression';
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
@@ -34,43 +35,62 @@ const MachineLearning = ({ data }) => {
   }, [featureColumns]);
 
   const handleTrain = () => {
-    // Simulating ML training and prediction
     setTrainingProgress(0);
     const interval = setInterval(() => {
-      setTrainingProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 500);
+      setTrainingProgress(prev => Math.min(prev + 10, 100));
+    }, 100);
 
-    setTimeout(() => {
-      clearInterval(interval);
-      setResults({
-        accuracy: Math.random().toFixed(2),
-        precision: Math.random().toFixed(2),
-        recall: Math.random().toFixed(2),
-        f1Score: Math.random().toFixed(2),
-      });
+    // Prepare data
+    const targetIndex = data[0].indexOf(targetColumn);
+    const featureIndices = featureColumns.map(col => data[0].indexOf(col));
+    const X = data.slice(1).map(row => featureIndices.map(i => parseFloat(row[i])));
+    const y = data.slice(1).map(row => parseFloat(row[targetIndex]));
 
-      // Simulating feature importance
-      const importance = featureColumns.map(feature => ({
-        feature,
-        importance: Math.random().toFixed(2)
-      }));
-      setFeatureImportance(importance.sort((a, b) => b.importance - a.importance));
+    // Split data
+    const splitIndex = Math.floor(X.length * (1 - testSize));
+    const X_train = X.slice(0, splitIndex);
+    const y_train = y.slice(0, splitIndex);
+    const X_test = X.slice(splitIndex);
+    const y_test = y.slice(splitIndex);
 
-      // Simulating a trained model (in reality, this would be the actual trained model)
-      setTrainedModel({
-        predict: (inputs) => {
-          // This is a dummy prediction function
-          // In a real scenario, this would use the actual trained model to make predictions
-          return Math.random().toFixed(2);
-        }
-      });
-    }, 5000);
+    let model;
+    switch (selectedAlgorithm) {
+      case 'linear_regression':
+        model = new SimpleLinearRegression(X_train.map(x => x[0]), y_train);
+        break;
+      case 'polynomial_regression':
+        model = new PolynomialRegression(X_train.map(x => x[0]), y_train, 2);
+        break;
+      // Add more algorithms as needed
+      default:
+        clearInterval(interval);
+        setTrainingProgress(0);
+        return;
+    }
+
+    // Calculate metrics
+    const y_pred = X_test.map(x => model.predict(x));
+    const mse = y_pred.reduce((sum, pred, i) => sum + Math.pow(pred - y_test[i], 2), 0) / y_pred.length;
+    const rmse = Math.sqrt(mse);
+    const r2 = 1 - (mse / y_test.reduce((sum, y) => sum + Math.pow(y - y_test.reduce((a, b) => a + b) / y_test.length, 2), 0));
+
+    clearInterval(interval);
+    setTrainingProgress(100);
+
+    setResults({
+      rmse: rmse.toFixed(4),
+      r2: r2.toFixed(4),
+    });
+
+    // Feature importance (for simple linear regression, it's just the coefficient)
+    if (selectedAlgorithm === 'linear_regression') {
+      setFeatureImportance([{
+        feature: featureColumns[0],
+        importance: Math.abs(model.slope).toFixed(4)
+      }]);
+    }
+
+    setTrainedModel(model);
   };
 
   const handlePredictionInputChange = (feature, value) => {
@@ -79,8 +99,9 @@ const MachineLearning = ({ data }) => {
 
   const handlePredict = () => {
     if (trainedModel) {
-      const predictionResult = trainedModel.predict(predictionInputs);
-      setPrediction(predictionResult);
+      const input = featureColumns.map(feature => parseFloat(predictionInputs[feature]));
+      const predictionResult = trainedModel.predict(input);
+      setPrediction(predictionResult.toFixed(4));
     }
   };
 
@@ -99,11 +120,7 @@ const MachineLearning = ({ data }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="linear_regression">Linear Regression</SelectItem>
-            <SelectItem value="logistic_regression">Logistic Regression</SelectItem>
-            <SelectItem value="decision_tree">Decision Tree</SelectItem>
-            <SelectItem value="random_forest">Random Forest</SelectItem>
-            <SelectItem value="svm">Support Vector Machine</SelectItem>
-            <SelectItem value="knn">K-Nearest Neighbors</SelectItem>
+            <SelectItem value="polynomial_regression">Polynomial Regression</SelectItem>
           </SelectContent>
         </Select>
         <Dialog>
@@ -211,27 +228,15 @@ const MachineLearning = ({ data }) => {
         <div className="mt-4 grid grid-cols-2 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Accuracy</CardTitle>
+              <CardTitle>RMSE</CardTitle>
             </CardHeader>
-            <CardContent>{results.accuracy}</CardContent>
+            <CardContent>{results.rmse}</CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Precision</CardTitle>
+              <CardTitle>R-squared</CardTitle>
             </CardHeader>
-            <CardContent>{results.precision}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Recall</CardTitle>
-            </CardHeader>
-            <CardContent>{results.recall}</CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>F1 Score</CardTitle>
-            </CardHeader>
-            <CardContent>{results.f1Score}</CardContent>
+            <CardContent>{results.r2}</CardContent>
           </Card>
         </div>
       )}
