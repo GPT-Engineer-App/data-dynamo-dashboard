@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { SimpleLinearRegression, PolynomialRegression } from 'ml-regression';
-import { KMeans } from 'ml-kmeans';
+import { kmeans } from 'ml-kmeans';
 import { RandomForestRegression as RandomForest } from 'ml-random-forest';
 import { DecisionTreeRegression as DecisionTree } from 'ml-cart';
 import { Matrix } from 'ml-matrix';
@@ -82,7 +82,7 @@ const MachineLearning = ({ data }) => {
         model.train(new Matrix(X_train), Matrix.columnVector(y_train));
         break;
       case 'kmeans':
-        model = new KMeans(hyperparameters.n_clusters || 3);
+        model = kmeans(X_train, hyperparameters.n_clusters || 3);
         model.train(X_train);
         break;
       default:
