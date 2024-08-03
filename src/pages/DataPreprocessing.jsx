@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -15,6 +14,7 @@ const DataPreprocessing = ({ data, setData }) => {
   const [customValue, setCustomValue] = useState('');
   const [normalizationRange, setNormalizationRange] = useState([0, 1]);
   const [visualizationData, setVisualizationData] = useState([]);
+  const [processedData, setProcessedData] = useState(null);
   const addPreprocessingTask = () => {
     setPreprocessingTasks([...preprocessingTasks, { column: '', method: '' }]);
   };
@@ -87,7 +87,7 @@ const DataPreprocessing = ({ data, setData }) => {
       }
     });
 
-    setData(newData);
+    setProcessedData(newData);
     updateVisualization(newData);
   };
 
@@ -111,6 +111,12 @@ const DataPreprocessing = ({ data, setData }) => {
       updateVisualization(data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (processedData) {
+      updateVisualization(processedData);
+    }
+  }, [processedData]);
 
   const downloadCSV = () => {
     if (!data) return;
@@ -233,14 +239,14 @@ const DataPreprocessing = ({ data, setData }) => {
         </div>
       )}
 
-      {data && (
+      {processedData && (
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Processed Data Preview</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {data[0].map((header, index) => (
+                  {processedData[0].map((header, index) => (
                     <th key={index} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {header}
                     </th>
@@ -248,7 +254,7 @@ const DataPreprocessing = ({ data, setData }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data.slice(1, 6).map((row, rowIndex) => (
+                {processedData.slice(1, 6).map((row, rowIndex) => (
                   <tr key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                       <td key={cellIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
