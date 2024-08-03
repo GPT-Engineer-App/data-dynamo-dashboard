@@ -9,7 +9,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { useState, useEffect } from 'react';
 import { SimpleLinearRegression, PolynomialRegression } from 'ml-regression';
 import { KMeans } from 'ml-kmeans';
 import { RandomForestRegression as RandomForest } from 'ml-random-forest';
