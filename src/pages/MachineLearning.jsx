@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,19 @@ const MachineLearning = ({ data }) => {
   const [results, setResults] = useState(null);
   const [testSize, setTestSize] = useState(0.2);
   const [hyperparameters, setHyperparameters] = useState({});
+  const [trainedModel, setTrainedModel] = useState(null);
+  const [predictionInputs, setPredictionInputs] = useState({});
+  const [prediction, setPrediction] = useState(null);
+
+  useEffect(() => {
+    if (featureColumns.length > 0) {
+      const initialInputs = {};
+      featureColumns.forEach(feature => {
+        initialInputs[feature] = '';
+      });
+      setPredictionInputs(initialInputs);
+    }
+  }, [featureColumns]);
 
   const handleTrain = () => {
     // Simulating ML training and prediction
@@ -22,6 +35,26 @@ const MachineLearning = ({ data }) => {
       recall: Math.random().toFixed(2),
       f1Score: Math.random().toFixed(2),
     });
+
+    // Simulating a trained model (in reality, this would be the actual trained model)
+    setTrainedModel({
+      predict: (inputs) => {
+        // This is a dummy prediction function
+        // In a real scenario, this would use the actual trained model to make predictions
+        return Math.random().toFixed(2);
+      }
+    });
+  };
+
+  const handlePredictionInputChange = (feature, value) => {
+    setPredictionInputs(prev => ({ ...prev, [feature]: value }));
+  };
+
+  const handlePredict = () => {
+    if (trainedModel) {
+      const predictionResult = trainedModel.predict(predictionInputs);
+      setPrediction(predictionResult);
+    }
   };
 
   const handleHyperparameterChange = (param, value) => {
@@ -136,6 +169,32 @@ const MachineLearning = ({ data }) => {
             </CardHeader>
             <CardContent>{results.f1Score}</CardContent>
           </Card>
+        </div>
+      )}
+
+      {trainedModel && (
+        <div className="mt-8 space-y-4">
+          <h3 className="text-lg font-semibold">Make Predictions</h3>
+          {featureColumns.map(feature => (
+            <div key={feature} className="space-y-2">
+              <Label>{feature}</Label>
+              <Input
+                type="number"
+                value={predictionInputs[feature]}
+                onChange={(e) => handlePredictionInputChange(feature, e.target.value)}
+                placeholder={`Enter ${feature} value`}
+              />
+            </div>
+          ))}
+          <Button onClick={handlePredict}>Predict</Button>
+          {prediction !== null && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Prediction Result</CardTitle>
+              </CardHeader>
+              <CardContent>{prediction}</CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>
