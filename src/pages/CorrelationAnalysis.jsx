@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ResponsiveContainer, Heatmap, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
 const CorrelationAnalysis = ({ data }) => {
   const [selectedColumns, setSelectedColumns] = useState([]);
@@ -16,16 +16,10 @@ const CorrelationAnalysis = ({ data }) => {
   const calculateCorrelationMatrix = () => {
     const matrix = [];
     for (let i = 0; i < selectedColumns.length; i++) {
-      const row = [];
       for (let j = 0; j < selectedColumns.length; j++) {
-        if (i === j) {
-          row.push({ x: selectedColumns[i], y: selectedColumns[j], value: 1 });
-        } else {
-          const correlation = calculateCorrelation(selectedColumns[i], selectedColumns[j]);
-          row.push({ x: selectedColumns[i], y: selectedColumns[j], value: correlation });
-        }
+        const correlation = i === j ? 1 : calculateCorrelation(selectedColumns[i], selectedColumns[j]);
+        matrix.push({ x: selectedColumns[i], y: selectedColumns[j], value: correlation });
       }
-      matrix.push(...row);
     }
     return matrix;
   };
@@ -68,16 +62,16 @@ const CorrelationAnalysis = ({ data }) => {
       </Select>
       {correlationData.length > 0 && (
         <ResponsiveContainer width="100%" height={400}>
-          <Heatmap
-            data={correlationData}
-            dataKey="value"
-            xDataKey="x"
-            yDataKey="y"
-          >
+          <ScatterChart>
             <XAxis dataKey="x" type="category" />
             <YAxis dataKey="y" type="category" />
-            <Tooltip />
-          </Heatmap>
+            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+            <Scatter data={correlationData} fill="#8884d8">
+              {correlationData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.value > 0 ? `rgb(0, ${Math.floor(entry.value * 255)}, 0)` : `rgb(${Math.floor(-entry.value * 255)}, 0, 0)`} />
+              ))}
+            </Scatter>
+          </ScatterChart>
         </ResponsiveContainer>
       )}
     </div>
