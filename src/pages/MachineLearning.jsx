@@ -14,7 +14,7 @@ import KMeans from 'ml-kmeans';
 import { RandomForestRegression as RandomForest } from 'ml-random-forest';
 import { DecisionTreeRegression as DecisionTree } from 'ml-cart';
 import { Matrix } from 'ml-matrix';
-import { crossValidation } from 'ml-cross-validation';
+import crossValidation from 'ml-cross-validation';
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
