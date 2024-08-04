@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoonIcon, SunIcon, ArrowRight } from "lucide-react";
+import { Moon, Sun, ArrowRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import DataUpload from './DataUpload';
 import StatisticalAnalysis from './StatisticalAnalysis';
@@ -36,7 +36,7 @@ const Index = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={toggleDarkMode} variant="outline" size="icon" className="absolute top-4 right-4">
-                  {darkMode ? <SunIcon className="h-[1.2rem] w-[1.2rem]" /> : <MoonIcon className="h-[1.2rem] w-[1.2rem]" />}
+                  {darkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

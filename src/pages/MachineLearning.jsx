@@ -14,7 +14,7 @@ import KMeans from 'ml-kmeans';
 import { RandomForestRegression as RandomForest } from 'ml-random-forest';
 import { DecisionTreeRegression as DecisionTree } from 'ml-cart';
 import { Matrix } from 'ml-matrix';
-import crossValidation from 'ml-cross-validation';
+import { crossValidation } from 'ml-cross-validation';
 
 const MachineLearning = ({ data }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
@@ -126,7 +126,7 @@ const MachineLearning = ({ data }) => {
     }
 
     // Cross-validation
-    const cvResults = crossValidation(model, new Matrix(X), Matrix.columnVector(y), 5);
+    const cvResults = crossValidation.kFold(model, new Matrix(X), Matrix.columnVector(y), 5);
     setCrossValidationResults({
       mean: cvResults.mean.toFixed(4),
       standardDeviation: cvResults.standardDeviation.toFixed(4)
